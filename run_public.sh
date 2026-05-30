@@ -16,6 +16,42 @@ install_cloudflared() {
   chmod +x "$HOME/.local/bin/cloudflared"
 }
 
+update_pages_redirect() {
+  local url="$1"
+  mkdir -p docs
+
+  cat > docs/index.html <<EOF
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=$url">
+  <title>Tesla Stock Forecaster</title>
+  <script>location.replace("$url");</script>
+</head>
+<body>
+  <p>Loading app… <a href="$url">Click here</a></p>
+</body>
+</html>
+EOF
+
+  if [ -f README.md ]; then
+    sed -i "s|Current live tunnel:.*|Current live tunnel: $url|" README.md
+  fi
+
+  if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    return
+  fi
+
+  if git diff --quiet docs/index.html README.md 2>/dev/null; then
+    return
+  fi
+
+  git add docs/index.html README.md
+  git commit -m "Update GitHub Pages redirect to current tunnel URL." >/dev/null 2>&1 || return
+  git push origin main >/dev/null 2>&1 && echo "  GitHub Pages redirect updated and pushed."
+}
+
 install_cloudflared
 ./run_server.sh
 
@@ -30,12 +66,16 @@ for _ in $(seq 1 30); do
   URL=$(grep -oE 'https://[a-zA-Z0-9-]+\.trycloudflare\.com' tunnel.log | head -1)
   if [ -n "$URL" ]; then
     echo "$URL" > public_url.txt
+    update_pages_redirect "$URL"
     echo ""
     echo "=========================================="
     echo "  PUBLIC LINK — enga irunthalum open aagum"
     echo "=========================================="
     echo ""
     echo "  $URL"
+    echo ""
+    echo "  GitHub Pages:"
+    echo "  https://albertraj163.github.io/tesla-stock-lstm/"
     echo ""
     echo "  Itha vera server, phone (mobile data),"
     echo "  office — ellam open panna mudiyum!"
