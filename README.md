@@ -2,6 +2,16 @@
 
 LSTM model for Tesla stock price prediction with a web UI.
 
+## Open App
+
+### https://albertraj163.github.io/tesla-stock-lstm/
+
+Enga irundhalum open pannunga — phone, laptop, office, vera server.
+
+Current live tunnel: https://bar-sparc-cached-static.trycloudflare.com
+
+---
+
 ## Open App (Public Link)
 
 Run this on your server:
