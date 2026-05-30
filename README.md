@@ -8,7 +8,7 @@ LSTM model for Tesla stock price prediction with a web UI.
 
 Enga irundhalum open pannunga — phone, laptop, office, vera server.
 
-Current live tunnel: https://bar-sparc-cached-static.trycloudflare.com
+Current live tunnel: https://other-gamma-shore-differently.trycloudflare.com
 
 ---
 
