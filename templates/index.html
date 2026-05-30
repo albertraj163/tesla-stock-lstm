@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tesla Stock Forecaster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <div>
+          <h1>Tesla Stock Forecaster</h1>
+          <p>LSTM model predicting Tesla (TSLA) close prices</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="card chart-card">
+        <div class="card-head">
+          <h2>Actual vs Predicted</h2>
+          <p class="muted" id="chart-subtitle">Loading chart data...</p>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="price-chart"></canvas>
+        </div>
+        <div class="metrics-row" id="metrics-row">
+          <div class="metric">
+            <span class="metric-label">RMSE</span>
+            <span class="metric-value" id="metric-rmse">—</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">MAE</span>
+            <span class="metric-value" id="metric-mae">—</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Look-back</span>
+            <span class="metric-value" id="metric-lookback">—</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Training samples</span>
+            <span class="metric-value" id="metric-samples">—</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="card predict-card">
+          <h2>Next-Day Forecast</h2>
+          <p class="muted">Based on the last 5 trading days</p>
+
+          <div class="predict-empty" id="predict-empty">
+            <div class="pulse-icon">📈</div>
+            <p>Loading prediction...</p>
+          </div>
+
+          <div class="predict-content hidden" id="predict-content">
+            <p class="predict-label">Predicted Close</p>
+            <p class="predict-price" id="predict-price">$0.00</p>
+            <p class="predict-meta" id="predict-meta"></p>
+
+            <div class="recent-prices">
+              <h3>Recent Closes</h3>
+              <ul id="recent-list"></ul>
+            </div>
+          </div>
+
+          <p class="error-msg hidden" id="error-msg"></p>
+        </section>
+
+        <section class="card info-card">
+          <h3>About this model</h3>
+          <ul>
+            <li>Long Short-Term Memory (LSTM) neural network</li>
+            <li>Trained on historical TSLA daily close prices</li>
+            <li>Uses MinMax scaling and 50 training epochs</li>
+            <li>For demo/education — not financial advice</li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <p>Powered by TensorFlow · LSTM Model · Tesla Stock Demo</p>
+    </footer>
+  </div>
+
+  <script>
+    const predictEmpty = document.getElementById("predict-empty");
+    const predictContent = document.getElementById("predict-content");
+    const predictPrice = document.getElementById("predict-price");
+    const predictMeta = document.getElementById("predict-meta");
+    const recentList = document.getElementById("recent-list");
+    const errorMsg = document.getElementById("error-msg");
+    const chartSubtitle = document.getElementById("chart-subtitle");
+
+    let priceChart = null;
+
+    function formatUsd(value) {
+      return "$" + Number(value).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+    }
+
+    function showError(message) {
+      errorMsg.textContent = message;
+      errorMsg.classList.remove("hidden");
+    }
+
+    function renderChart(data) {
+      const ctx = document.getElementById("price-chart");
+      if (priceChart) {
+        priceChart.destroy();
+      }
+
+      priceChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: data.dates,
+          datasets: [
+            {
+              label: "Actual Close",
+              data: data.actual,
+              borderColor: "#ef4444",
+              backgroundColor: "rgba(239, 68, 68, 0.08)",
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.25,
+            },
+            {
+              label: "LSTM Predicted",
+              data: data.predicted,
+              borderColor: "#38bdf8",
+              backgroundColor: "rgba(56, 189, 248, 0.08)",
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.25,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: {
+              labels: { color: "#cbd5e1", boxWidth: 12 },
+            },
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: "#94a3b8",
+                maxTicksLimit: 8,
+              },
+              grid: { color: "rgba(148, 163, 184, 0.12)" },
+            },
+            y: {
+              ticks: {
+                color: "#94a3b8",
+                callback: (value) => "$" + value,
+              },
+              grid: { color: "rgba(148, 163, 184, 0.12)" },
+            },
+          },
+        },
+      });
+
+      chartSubtitle.textContent =
+        `Latest close ${data.latest_date}: ${formatUsd(data.latest_close)}`;
+
+      if (data.metrics) {
+        document.getElementById("metric-rmse").textContent = formatUsd(data.metrics.rmse);
+        document.getElementById("metric-mae").textContent = formatUsd(data.metrics.mae);
+        document.getElementById("metric-lookback").textContent = data.metrics.look_back + " days";
+        document.getElementById("metric-samples").textContent = data.metrics.samples;
+      }
+    }
+
+    function renderPrediction(data) {
+      predictEmpty.classList.add("hidden");
+      predictContent.classList.remove("hidden");
+      predictPrice.textContent = formatUsd(data.predicted_price);
+      predictMeta.textContent =
+        `After ${data.latest_date} close of ${formatUsd(data.latest_close)}`;
+
+      recentList.innerHTML = "";
+      data.based_on_dates.forEach((date, index) => {
+        const item = document.createElement("li");
+        item.innerHTML =
+          `<span>${date}</span><strong>${formatUsd(data.based_on_prices[index])}</strong>`;
+        recentList.appendChild(item);
+      });
+    }
+
+    async function loadDashboard() {
+      try {
+        const [chartResponse, predictResponse] = await Promise.all([
+          fetch("/api/chart"),
+          fetch("/api/predict"),
+        ]);
+
+        const chartData = await chartResponse.json();
+        const predictData = await predictResponse.json();
+
+        if (!chartResponse.ok) {
+          throw new Error(chartData.error || "Failed to load chart data");
+        }
+        if (!predictResponse.ok) {
+          throw new Error(predictData.error || "Failed to load prediction");
+        }
+
+        renderChart(chartData);
+        renderPrediction(predictData);
+      } catch (error) {
+        predictEmpty.classList.add("hidden");
+        showError(error.message);
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
