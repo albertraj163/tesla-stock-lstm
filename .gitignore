@@ -7,7 +7,9 @@ access.log
 error.log
 tunnel.log
 public_url.txt
+local_url.txt
 nohup.out
+tunnel.log
 tesla_lstm_model.keras
 scaler.joblib
 metrics.json

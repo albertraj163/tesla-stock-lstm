@@ -1,0 +1,3 @@
+PORT=5555
+HOST=127.0.0.1
+APP_URL=http://localhost:5555

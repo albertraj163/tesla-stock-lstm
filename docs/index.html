@@ -2,11 +2,37 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=https://ranked-witch-madrid-toilet.trycloudflare.com">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tesla Stock Forecaster</title>
-  <script>location.replace("https://ranked-witch-madrid-toilet.trycloudflare.com");</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <p>Loading app… <a href="https://ranked-witch-madrid-toilet.trycloudflare.com">Click here</a></p>
+  <main class="page">
+    <div class="logo">⚡</div>
+    <h1>Tesla Stock Forecaster</h1>
+    <p class="subtitle">LSTM model for Tesla (TSLA) stock price prediction</p>
+
+    <div class="card">
+      <p class="label">Run locally on your machine</p>
+      <a class="link" href="http://localhost:5555">http://localhost:5555</a>
+      <p class="note">Start the server first, then open this link in your browser.</p>
+    </div>
+
+    <div class="steps">
+      <h2>How to run</h2>
+      <pre><code>git clone https://github.com/albertraj163/tesla-stock-lstm.git
+cd tesla-stock-lstm
+pip install -r requirements.txt
+chmod +x run_server.sh
+./run_server.sh</code></pre>
+    </div>
+
+    <p class="footer">
+      <a href="https://github.com/albertraj163/tesla-stock-lstm">View on GitHub</a>
+    </p>
+  </main>
 </body>
 </html>

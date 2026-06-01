@@ -2,40 +2,35 @@
 
 LSTM model for Tesla stock price prediction with a web UI.
 
-## Open App
+## Open App (Localhost)
 
-### https://albertraj163.github.io/tesla-stock-lstm/
-
-Enga irundhalum open pannunga — phone, laptop, office, vera server.
-
-Current live tunnel: https://ranked-witch-madrid-toilet.trycloudflare.com
+**http://localhost:5555**
 
 ---
 
-## Open App (Public Link)
-
-Run this on your server:
-
-```bash
-chmod +x run_public.sh stop_server.sh status_server.sh run_server.sh
-./run_public.sh
-```
-
-It prints a **trycloudflare.com** link — open it from anywhere (phone, office, another server).
-
-```bash
-./status_server.sh   # check if running + get public URL
-./stop_server.sh     # stop server and tunnel
-```
-
----
-
-## Local Setup
+## Quick Start
 
 ```bash
 pip install -r requirements.txt
-python3 train_lstm.py    # train LSTM (auto-runs on first server start)
-python3 app.py           # dev server on http://localhost:5555
+chmod +x start.sh run_server.sh stop_server.sh status_server.sh
+./run_server.sh
+```
+
+Open in browser: **http://localhost:5555**
+
+```bash
+./status_server.sh   # check if running
+./stop_server.sh     # stop server
+./start.sh           # run in foreground (dev mode)
+```
+
+---
+
+## Train Model
+
+```bash
+python3 train_lstm.py
+python3 predict.py    # CLI next-day prediction
 ```
 
 ## Project Files
@@ -46,6 +41,10 @@ python3 app.py           # dev server on http://localhost:5555
 | `train_lstm.py` | Train and save LSTM model |
 | `predict.py` | CLI next-day price prediction |
 | `utils.py` | Shared data loading and model helpers |
-| `tesla_stock_sample.csv` | Tesla daily close prices (auto-expanded via yfinance) |
+| `server_env.sh` | Port and localhost URL config |
+| `tesla_stock_sample.csv` | Tesla daily close prices |
+
+**Port:** `5555`  
+**Host:** `127.0.0.1` (localhost only)
 
 GitHub Repo: https://github.com/albertraj163/tesla-stock-lstm

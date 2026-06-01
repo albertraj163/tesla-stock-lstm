@@ -1,0 +1,105 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "DM Sans", system-ui, sans-serif;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+  min-height: 100vh;
+  color: #fff;
+}
+
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 20px;
+  text-align: center;
+}
+
+.logo {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #94a3b8;
+  margin-bottom: 32px;
+}
+
+.card {
+  background: #fff;
+  color: #0f172a;
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 28px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+
+.link {
+  display: inline-block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #e82127;
+  text-decoration: none;
+  margin-bottom: 12px;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.note {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.steps {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.steps h2 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+
+pre {
+  overflow-x: auto;
+}
+
+code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+.footer a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}

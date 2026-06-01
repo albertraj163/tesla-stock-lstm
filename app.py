@@ -1,6 +1,5 @@
 import os
 import socket
-from pathlib import Path
 
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
@@ -8,29 +7,7 @@ from flask_cors import CORS
 from utils import get_chart_data, predict_next_day
 
 DEFAULT_PORT = 5555
-
-
-def get_server_ip():
-    try:
-        for info in socket.getaddrinfo(socket.gethostname(), None, socket.AF_INET):
-            ip = info[4][0]
-            if ip.startswith("192."):
-                return ip
-    except OSError:
-        pass
-
-    probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        probe.connect(("192.168.1.1", 1))
-        ip = probe.getsockname()[0]
-        if ip.startswith("192."):
-            return ip
-    except OSError:
-        pass
-    finally:
-        probe.close()
-
-    return socket.gethostbyname(socket.gethostname())
+DEFAULT_HOST = "127.0.0.1"
 
 
 app = Flask(__name__)
@@ -80,10 +57,10 @@ def find_free_port(start=DEFAULT_PORT, attempts=20):
 
 if __name__ == "__main__":
     get_chart_data()
+    host = os.environ.get("HOST", DEFAULT_HOST)
     preferred = int(os.environ.get("PORT", DEFAULT_PORT))
     port = find_free_port(preferred)
     if port != preferred:
         print(f"Port {preferred} is busy, using port {port} instead.")
-    server_ip = get_server_ip()
-    print(f"Open in browser: http://{server_ip}:{port}")
-    app.run(debug=True, host="0.0.0.0", port=port, use_reloader=False)
+    print(f"Open in browser: http://localhost:{port}")
+    app.run(debug=True, host=host, port=port, use_reloader=False)
